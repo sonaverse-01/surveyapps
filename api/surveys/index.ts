@@ -49,11 +49,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('MONGODB_URI 환경 변수가 설정되지 않았습니다.');
       return res.status(500).json({ 
         error: 'MONGODB_URI 환경 변수가 설정되지 않았습니다.',
-        details: 'Vercel 환경 변수 설정을 확인하세요.'
+        details: 'Vercel 환경 변수 설정을 확인하세요.',
+        env: {
+          nodeEnv: process.env.NODE_ENV,
+          hasMongoUri: false
+        }
       });
     }
 
+    console.log('MongoDB 연결 시도 중...');
     const client = await clientPromise;
+    console.log('MongoDB 연결 성공');
     const db = client.db(DB_NAME);
 
     // 모든 설문 조회
