@@ -1,0 +1,5 @@
+{
+  "name": "InsightFlow Survey Tablet",
+  "description": "A tablet-optimized survey application featuring user branching logic, admin management, real-time analytics, and AI-powered insights.",
+  "requestFramePermissions": []
+}
