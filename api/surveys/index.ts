@@ -47,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 환경 변수 확인
     if (!process.env.MONGODB_URI) {
       console.error('MONGODB_URI 환경 변수가 설정되지 않았습니다.');
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'MONGODB_URI 환경 변수가 설정되지 않았습니다.',
         details: 'Vercel 환경 변수 설정을 확인하세요.',
         env: {
@@ -57,11 +57,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    console.log('MongoDB 연결 시도 중...', { 
+    console.log('MongoDB 연결 시도 중...', {
       hasUri: !!process.env.MONGODB_URI,
-      dbName: DB_NAME 
+      dbName: DB_NAME
     });
-    
+
     let client;
     try {
       client = await clientPromise;
@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         details: '데이터베이스에 연결할 수 없습니다.'
       });
     }
-    
+
     const db = client.db(DB_NAME);
 
     // 모든 설문 조회
@@ -95,9 +95,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'POST') {
       const survey: Survey = req.body;
       const surveyToSave = { ...survey };
-      
+
       const result = await db.collection('surveys').updateOne(
-        { 
+        {
           $or: [
             { id: survey.id },
             { _id: survey.id }
@@ -106,10 +106,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         { $set: surveyToSave },
         { upsert: true }
       );
-      
+
       if (result.upsertedCount > 0 || result.modifiedCount > 0) {
         await db.collection('surveys').updateOne(
-          { 
+          {
             $or: [
               { id: survey.id },
               { _id: survey.id }
@@ -118,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           { $set: { id: survey.id } }
         );
       }
-      
+
       return res.json({ success: true, survey });
     }
 
@@ -130,13 +130,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       name: error.name,
       mongodbUri: process.env.MONGODB_URI ? '설정됨' : '설정 안됨'
     });
-    
+
     const errorMessage = error.message || 'Internal server error';
     const statusCode = error.name === 'MongoServerError' ? 500 : 500;
-    
-    return res.status(statusCode).json({ 
+
+    return res.status(statusCode).json({
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      details: error.stack // 디버깅을 위해 프로덕션에서도 스택 트레이스 노출
     });
   }
 }
