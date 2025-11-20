@@ -57,9 +57,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    console.log('MongoDB 연결 시도 중...');
-    const client = await clientPromise;
-    console.log('MongoDB 연결 성공');
+    console.log('MongoDB 연결 시도 중...', { 
+      hasUri: !!process.env.MONGODB_URI,
+      dbName: DB_NAME 
+    });
+    
+    let client;
+    try {
+      client = await clientPromise;
+      console.log('MongoDB 연결 성공');
+    } catch (connError: any) {
+      console.error('MongoDB 연결 오류:', {
+        message: connError.message,
+        name: connError.name,
+        code: connError.code
+      });
+      return res.status(500).json({
+        error: 'MongoDB 연결 실패',
+        message: connError.message,
+        details: '데이터베이스에 연결할 수 없습니다.'
+      });
+    }
+    
     const db = client.db(DB_NAME);
 
     // 모든 설문 조회
