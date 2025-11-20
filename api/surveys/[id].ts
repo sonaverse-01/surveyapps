@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import clientPromise from '../lib/mongodb.js';
-import { Survey } from '../lib/types.js';
+import clientPromise from '../lib/mongodb';
+import { Survey } from '../../types';
 
 const DB_NAME = process.env.MONGODB_DB || 'survey_apps';
 
