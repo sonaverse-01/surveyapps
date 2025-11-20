@@ -1,10 +1,12 @@
 import { MongoClient } from 'mongodb';
 
-if (!process.env.MONGODB_URI) {
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  console.error('MONGODB_URI 환경 변수가 설정되지 않았습니다.');
   throw new Error('MONGODB_URI 환경 변수가 설정되지 않았습니다.');
 }
 
-const uri = process.env.MONGODB_URI;
 const options = {};
 
 let client: MongoClient;
@@ -19,13 +21,24 @@ if (process.env.NODE_ENV === 'development') {
   // 개발 환경: 전역 변수에 저장하여 재사용
   if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    global._mongoClientPromise = client.connect().catch((err) => {
+      console.error('MongoDB 연결 실패:', err);
+      global._mongoClientPromise = undefined;
+      throw err;
+    });
   }
   clientPromise = global._mongoClientPromise;
 } else {
-  // 프로덕션 환경: 새 클라이언트 생성
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  // 프로덕션 환경: 전역 변수에 저장하여 재사용 (Vercel 서버리스)
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect().catch((err) => {
+      console.error('MongoDB 연결 실패:', err);
+      global._mongoClientPromise = undefined;
+      throw err;
+    });
+  }
+  clientPromise = global._mongoClientPromise;
 }
 
 export default clientPromise;

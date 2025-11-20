@@ -44,6 +44,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // 환경 변수 확인
+    if (!process.env.MONGODB_URI) {
+      console.error('MONGODB_URI 환경 변수가 설정되지 않았습니다.');
+      return res.status(500).json({ 
+        error: 'MONGODB_URI 환경 변수가 설정되지 않았습니다.',
+        details: 'Vercel 환경 변수 설정을 확인하세요.'
+      });
+    }
+
     const client = await clientPromise;
     const db = client.db(DB_NAME);
 
@@ -54,8 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .sort({ createdAt: -1 })
         .toArray();
       const transformed = surveys.map(transformSurveyFromDB);
-      res.json(transformed);
-      return;
+      return res.json(transformed);
     }
 
     // 설문 생성/수정
@@ -86,14 +94,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         );
       }
       
-      res.json({ success: true, survey });
-      return;
+      return res.json({ success: true, survey });
     }
 
-    res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
   } catch (error: any) {
-    console.error('Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('API Error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      mongodbUri: process.env.MONGODB_URI ? '설정됨' : '설정 안됨'
+    });
+    
+    const errorMessage = error.message || 'Internal server error';
+    const statusCode = error.name === 'MongoServerError' ? 500 : 500;
+    
+    return res.status(statusCode).json({ 
+      error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }
 
