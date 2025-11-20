@@ -32,17 +32,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       for (const s of allSurveys) {
         const surveyId = s.id || s._id?.toString();
         if (surveyId === id) {
-          updates.push(
-            db.collection('surveys').updateOne(
-              { 
-                $or: [
-                  { id },
-                  { _id: id }
-                ]
-              },
-              { $set: { isActive: true, targetAudience: audience, id } }
-            )
-          );
+            updates.push(
+              db.collection('surveys').updateOne(
+                {
+                  $or: [
+                    { id: id as string },
+                    { _id: id as any }
+                  ] as any
+                },
+                { $set: { isActive: true, targetAudience: audience, id } }
+              )
+            );
         } else {
           const isConflict = 
             audience === TargetAudience.ALL || 
@@ -50,17 +50,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             s.targetAudience === audience;
 
           if (isConflict) {
-            updates.push(
-              db.collection('surveys').updateOne(
-                { 
-                  $or: [
-                    { id: surveyId },
-                    { _id: surveyId }
-                  ]
-                },
-                { $set: { isActive: false } }
-              )
-            );
+              updates.push(
+                db.collection('surveys').updateOne(
+                  {
+                    $or: [
+                      { id: surveyId },
+                      { _id: surveyId as any }
+                    ] as any
+                  },
+                  { $set: { isActive: false } }
+                )
+              );
           }
         }
       }
@@ -68,11 +68,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await Promise.all(updates);
     } else {
       await db.collection('surveys').updateOne(
-        { 
+        {
           $or: [
-            { id },
-            { _id: id }
-          ]
+            { id: id as string },
+            { _id: id as any }
+          ] as any
         },
         { $set: { isActive: false, targetAudience: audience, id } }
       );

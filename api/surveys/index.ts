@@ -100,8 +100,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         {
           $or: [
             { id: survey.id },
-            { _id: survey.id }
-          ]
+            { _id: survey.id as any }
+          ] as any
         },
         { $set: surveyToSave },
         { upsert: true }
@@ -112,8 +112,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           {
             $or: [
               { id: survey.id },
-              { _id: survey.id }
-            ]
+              { _id: survey.id as any }
+            ] as any
           },
           { $set: { id: survey.id } }
         );

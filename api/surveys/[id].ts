@@ -48,11 +48,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 특정 설문 조회
     if (req.method === 'GET') {
-      const survey = await db.collection('surveys').findOne({
+      const survey = await db.collection('surveys').findOne({ 
         $or: [
-          { id },
-          { _id: id }
-        ]
+          { id: id as string },
+          { _id: id as any }
+        ] as any
       });
       if (!survey) {
         return res.status(404).json({ error: '설문을 찾을 수 없습니다.' });
@@ -64,11 +64,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 설문 삭제
     if (req.method === 'DELETE') {
-      await db.collection('surveys').deleteOne({
+      await db.collection('surveys').deleteOne({ 
         $or: [
-          { id },
-          { _id: id }
-        ]
+          { id: id as string },
+          { _id: id as any }
+        ] as any
       });
       res.json({ success: true });
       return;
