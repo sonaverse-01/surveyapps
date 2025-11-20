@@ -188,7 +188,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ onLogout, onPrint }) => {
         <div className="p-6">
           <div className="flex items-center gap-3 mb-2">
             <img src="/logo.png" alt="로고" className="h-10 w-10 object-contain" />
-            <h1 className="text-xl font-bold tracking-wider">BO DUME SURVEY</h1>
+            <h1 className="text-xl font-bold tracking-wider">BO DUME 설문조사</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">관리자 콘솔</p>
         </div>

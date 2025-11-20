@@ -45,7 +45,7 @@ const App: React.FC = () => {
           <div className="col-span-1 md:col-span-2 text-center mb-8">
             <div className="flex items-center justify-center gap-4 mb-4">
               <img src="/logo.png" alt="로고" className="h-12 w-12 md:h-16 md:w-16 object-contain" />
-              <h1 className="text-5xl font-bold tracking-tight text-slate-900">BO DUME SURVEY</h1>
+              <h1 className="text-5xl font-bold tracking-tight text-slate-900">BO DUME 설문조사</h1>
             </div>
             <p className="text-xl text-slate-700">설문에 참여하실 대상을 선택해주세요.</p>
           </div>
