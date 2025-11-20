@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import clientPromise from '../lib/mongodb';
+import clientPromise from '../lib/mongodb.js';
 import { Survey } from '../../types';
 
 const DB_NAME = process.env.MONGODB_DB || 'survey_apps';
@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 특정 설문 조회
     if (req.method === 'GET') {
-      const survey = await db.collection('surveys').findOne({ 
+      const survey = await db.collection('surveys').findOne({
         $or: [
           { id },
           { _id: id }
@@ -64,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 설문 삭제
     if (req.method === 'DELETE') {
-      await db.collection('surveys').deleteOne({ 
+      await db.collection('surveys').deleteOne({
         $or: [
           { id },
           { _id: id }
